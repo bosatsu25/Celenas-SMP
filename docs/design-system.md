@@ -39,13 +39,15 @@ Use system sans-serif for copy and monospace only for connection addresses.
 The page uses a floating desktop glass header and an accessible expandable
 mobile menu. The Hero combines a large official mark with a separate SVG/CSS
 celestial scene: deterministic far/mid star layers, a few asynchronously
-twinkling accents, a locally calculated lunar phase, slowly drifting moonlight
-and differently paced orbit rings. Motion uses transforms and opacity, is
-intentionally low-key, and is disabled when the user requests reduced motion.
-The static phase shape and atmosphere remain visible with reduced motion. Small
-client boundaries support mobile menu behavior and refreshing the lunar phase;
-no animation or astronomy dependency is needed. The calculation is an
-approximation; see [lunar phase](lunar-phase.md).
+twinkling accents, three deterministic radial-gradient stardust depth layers, a
+locally calculated lunar phase, slowly drifting moonlight and differently paced
+orbit rings. Stardust opacity responds subtly to continuous lunar illumination;
+its layers drift with transforms rather than animating individual particles or
+background positions. Motion is intentionally low-key and is disabled when the
+user requests reduced motion, while the static phase shape, atmosphere and dust
+remain visible. Small client boundaries support mobile menu behavior and
+refreshing the lunar phase; no animation or astronomy dependency is needed. The
+calculation is an approximation; see [lunar phase](lunar-phase.md).
 
 ## Interaction and accessibility
 

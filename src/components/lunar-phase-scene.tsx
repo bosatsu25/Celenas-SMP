@@ -12,6 +12,7 @@ type SceneStyle = CSSProperties & {
   "--moonlight-opacity": string;
   "--star-field-far-opacity": string;
   "--star-field-mid-opacity": string;
+  "--stardust-opacity": string;
 };
 
 function getShadowPath(phaseFraction: number): string {
@@ -40,12 +41,15 @@ export function LunarPhaseVisual({ phase }: { phase: LunarPhaseResult }) {
       0.48 +
       (1 - phase.illumination) * 0.12
     ).toFixed(3),
+    "--stardust-opacity": (0.16 + (1 - phase.illumination) * 0.08).toFixed(3),
   };
 
   return (
     <div className="celestial-scene" style={style}>
       <div className="star-field star-field-far" />
+      <div className="stardust-layer stardust-far" />
       <div className="star-field star-field-mid" />
+      <div className="stardust-layer stardust-mid" />
       <div className="star-accents">
         <span className="star-twinkle star-twinkle-one" />
         <span className="star-twinkle star-twinkle-two" />
@@ -98,6 +102,7 @@ export function LunarPhaseVisual({ phase }: { phase: LunarPhaseResult }) {
         <span className="orbit orbit-three" />
         <span className="orbit-light" />
       </div>
+      <div className="stardust-layer stardust-near" />
     </div>
   );
 }

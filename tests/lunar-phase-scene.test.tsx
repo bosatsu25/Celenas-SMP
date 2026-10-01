@@ -30,7 +30,9 @@ describe("lunar phase visual", () => {
       "--moon-glow-opacity": "0.120",
       "--moonlight-opacity": "0.080",
       "--star-field-far-opacity": "0.440",
+      "--stardust-opacity": "0.240",
     });
+    expect(container.querySelectorAll(".stardust-layer")).toHaveLength(3);
   });
 
   it("renders distinct illumination and waxing direction for each phase", () => {
@@ -78,6 +80,9 @@ describe("lunar phase visual", () => {
     rerender(<LunarPhaseVisual phase={fullMoon} />);
     expect(moon).toHaveAttribute("data-phase", "full");
     expect(moon).toHaveAttribute("data-illumination", "1.000");
+    expect(container.querySelector(".celestial-scene")).toHaveStyle({
+      "--stardust-opacity": "0.160",
+    });
   });
 
   it("refreshes the server-provided phase after hydration and cleans up its timers", async () => {

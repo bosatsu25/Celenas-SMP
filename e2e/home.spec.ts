@@ -126,6 +126,31 @@ test("hero celestial scene is decorative and uses CSS motion", async ({
     "data-illumination",
     /^\d\.\d{3}$/,
   );
+  await expect(page.locator(".stardust-layer")).toHaveCount(3);
+  for (const selector of [".stardust-far", ".stardust-mid", ".stardust-near"]) {
+    const dust = page.locator(selector);
+    expect(
+      await dust.evaluate((layer) => getComputedStyle(layer).animationName),
+    ).toMatch(/^stardust-drift-/);
+    expect(
+      await dust.evaluate((layer) => {
+        const animation = layer.getAnimations()[0];
+        const duration = animation?.effect?.getTiming().duration;
+        if (!animation || typeof duration !== "number") {
+          return false;
+        }
+
+        animation.pause();
+        animation.currentTime = 0;
+        const startTransform = getComputedStyle(layer).transform;
+        animation.currentTime = duration / 2;
+        const driftTransform = getComputedStyle(layer).transform;
+        animation.play();
+
+        return startTransform !== driftTransform;
+      }),
+    ).toBe(true);
+  }
   expect(
     await page.locator(".star-twinkle-one").evaluate((star) => {
       return getComputedStyle(star).animationName;
@@ -175,7 +200,14 @@ test("respects reduced motion", async ({ page }) => {
       () => getComputedStyle(document.documentElement).scrollBehavior,
     ),
   ).toBe("auto");
-  for (const selector of [".moon", ".orbit-one", ".star-twinkle-one"]) {
+  for (const selector of [
+    ".moon",
+    ".orbit-one",
+    ".star-twinkle-one",
+    ".stardust-far",
+    ".stardust-mid",
+    ".stardust-near",
+  ]) {
     await expect(page.locator(selector)).toHaveCSS("animation-name", "none");
   }
   await expect(page.locator(".moon-svg")).toBeVisible();

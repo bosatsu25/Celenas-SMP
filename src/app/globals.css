@@ -548,6 +548,7 @@ h3 {
 
 .star-field-mid {
   inset: 9% 7%;
+  z-index: 1;
   opacity: var(--star-field-mid-opacity);
   background-image:
     radial-gradient(
@@ -572,9 +573,114 @@ h3 {
   transform: translateZ(0);
 }
 
+.stardust-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-repeat: repeat;
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+}
+
+.stardust-far {
+  z-index: 1;
+  opacity: calc(var(--stardust-opacity) * 0.58);
+  background-image:
+    radial-gradient(
+      1px 1px at 11% 21%,
+      rgba(230, 235, 255, 0.72) 45%,
+      transparent 100%
+    ),
+    radial-gradient(
+      1px 1px at 39% 78%,
+      rgba(208, 219, 255, 0.62) 45%,
+      transparent 100%
+    ),
+    radial-gradient(
+      1px 1px at 72% 37%,
+      rgba(239, 241, 255, 0.68) 45%,
+      transparent 100%
+    ),
+    radial-gradient(
+      1px 1px at 91% 69%,
+      rgba(208, 219, 255, 0.55) 45%,
+      transparent 100%
+    ),
+    radial-gradient(
+      1px 1px at 59% 11%,
+      rgba(230, 235, 255, 0.58) 45%,
+      transparent 100%
+    );
+  background-size:
+    21rem 18rem,
+    27rem 23rem,
+    24rem 20rem,
+    29rem 25rem,
+    19rem 22rem;
+  animation: stardust-drift-far 46s ease-in-out -19s infinite;
+}
+
+.stardust-mid {
+  z-index: 2;
+  opacity: calc(var(--stardust-opacity) * 0.78);
+  background-image:
+    radial-gradient(
+      1.25px 1.25px at 17% 63%,
+      rgba(230, 235, 255, 0.72) 45%,
+      transparent 100%
+    ),
+    radial-gradient(
+      1px 1px at 47% 19%,
+      rgba(211, 222, 255, 0.64) 45%,
+      transparent 100%
+    ),
+    radial-gradient(
+      1.25px 1.25px at 83% 79%,
+      rgba(237, 240, 255, 0.62) 45%,
+      transparent 100%
+    ),
+    radial-gradient(
+      1px 1px at 68% 48%,
+      rgba(206, 219, 255, 0.58) 45%,
+      transparent 100%
+    );
+  background-size:
+    26rem 22rem,
+    23rem 27rem,
+    31rem 24rem,
+    29rem 21rem;
+  animation: stardust-drift-mid 35s ease-in-out -8s infinite;
+}
+
+.stardust-near {
+  z-index: 4;
+  opacity: calc(var(--stardust-opacity) * 0.82);
+  background-image:
+    radial-gradient(
+      1.5px 1.5px at 7% 42%,
+      rgba(232, 237, 255, 0.58) 45%,
+      transparent 100%
+    ),
+    radial-gradient(
+      1.25px 1.25px at 93% 28%,
+      rgba(215, 225, 255, 0.62) 45%,
+      transparent 100%
+    ),
+    radial-gradient(
+      1.5px 1.5px at 81% 91%,
+      rgba(230, 235, 255, 0.52) 45%,
+      transparent 100%
+    );
+  background-size:
+    32rem 28rem,
+    35rem 31rem,
+    29rem 34rem;
+  animation: stardust-drift-near 27s ease-in-out -14s infinite;
+}
+
 .star-accents {
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   inset: 0;
   pointer-events: none;
 }
@@ -630,7 +736,7 @@ h3 {
 
 .celestial-stage {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   display: grid;
   width: min(100%, 34rem);
   aspect-ratio: 1;
@@ -1179,6 +1285,36 @@ h3 {
   }
 }
 
+@keyframes stardust-drift-far {
+  0%,
+  100% {
+    transform: translate3d(-4px, 3px, 0);
+  }
+  50% {
+    transform: translate3d(4px, -3px, 0);
+  }
+}
+
+@keyframes stardust-drift-mid {
+  0%,
+  100% {
+    transform: translate3d(5px, -4px, 0);
+  }
+  50% {
+    transform: translate3d(-5px, 4px, 0);
+  }
+}
+
+@keyframes stardust-drift-near {
+  0%,
+  100% {
+    transform: translate3d(-7px, -4px, 0);
+  }
+  50% {
+    transform: translate3d(7px, 4px, 0);
+  }
+}
+
 @keyframes menu-reveal {
   from {
     transform: translateY(-0.3rem);
@@ -1281,6 +1417,33 @@ h3 {
 
   .celestial-stage {
     width: min(100%, 25rem);
+  }
+
+  .stardust-far {
+    opacity: calc(var(--stardust-opacity) * 0.46);
+    background-size:
+      27rem 23rem,
+      35rem 30rem,
+      31rem 26rem,
+      38rem 33rem,
+      25rem 29rem;
+  }
+
+  .stardust-mid {
+    opacity: calc(var(--stardust-opacity) * 0.62);
+    background-size:
+      34rem 29rem,
+      30rem 35rem,
+      40rem 31rem,
+      38rem 27rem;
+  }
+
+  .stardust-near {
+    opacity: calc(var(--stardust-opacity) * 0.6);
+    background-size:
+      42rem 36rem,
+      46rem 40rem,
+      38rem 44rem;
   }
 
   .hero-glass-note {
