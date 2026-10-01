@@ -10,10 +10,10 @@ language.
 
 The current implementation delivers the public Web v1 landing experience:
 Hero / About / World / Server / Rules pending state / Gallery / Join / Footer.
-The canonical logo is now represented by the official white asset in
-`public/brand/celenas-logo-white.png` when available. The site remains intentionally
-modest about unverified server/community data and keeps confirmed values separate
-from pending placeholders.
+The canonical logo is the official white asset at
+`public/brand/celenas-logo-white.png`, already used in the site header and hero.
+The site remains intentionally modest about unverified server/community data and
+keeps confirmed values separate from pending placeholders.
 
 ## Tokens and components
 

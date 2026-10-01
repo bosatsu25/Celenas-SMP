@@ -2,7 +2,7 @@
 
 ## Boundaries
 
-Celenas Web Phase 1 is a static landing page rendered by Next.js App Router.
+Celenas Web v1 is a marketing landing page rendered by Next.js App Router.
 It has no API routes, data collection, authentication, external runtime requests
 or client state. Internal anchors provide navigation without a custom library.
 

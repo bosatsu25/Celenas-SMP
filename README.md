@@ -35,7 +35,7 @@ Windows のブラウザ導入コマンドなど、詳細は [テスト手順](do
 - Hero / About / World / Server / Rules / Gallery / Join / Footer を含む
 - Liquid Glass に着想を得たナビゲーションとインタラクション層を採用
 - 未確定の公開情報は `src/config/site.ts` の `null` / optional で保持
-- 公式ロゴが提供されれば `public/brand/celenas-logo-white.png` を使用する構成
+- 公式ロゴは `public/brand/celenas-logo-white.png` を使用し、ヘッダーと Hero に反映済み
 - 本番環境で使うサーバーアドレス、ドメイン、Discord URL、Minecraft スクリーンショットは未確定
 - サーバー状態APIやライブ監視は未実装
 
