@@ -25,6 +25,33 @@ test("home exposes honest connection details with no runtime errors", async ({
   expect(errors).toEqual([]);
 });
 
+test("serves the official Celenas site icon", async ({ page }) => {
+  const faviconErrors: string[] = [];
+  page.on("response", (response) => {
+    const path = new URL(response.url()).pathname;
+    if (path.endsWith("/favicon.ico") && response.status() === 404) {
+      faviconErrors.push(response.url());
+    }
+  });
+  await page.goto("/");
+  const iconHref = await page
+    .locator('link[rel="icon"]')
+    .first()
+    .getAttribute("href");
+
+  expect(iconHref).toBeTruthy();
+  const response = await page.request.get(
+    new URL(iconHref!, page.url()).toString(),
+  );
+
+  expect(response.ok()).toBe(true);
+  expect(response.headers()["content-type"]).toContain("image/png");
+  expect((await response.body()).subarray(0, 8)).toEqual(
+    Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
+  );
+  expect(faviconErrors).toEqual([]);
+});
+
 test("keyboard users can skip to main content", async ({ page }) => {
   await page.goto("/");
   await page.keyboard.press("Tab");
@@ -90,6 +117,15 @@ test("hero celestial scene is decorative and uses CSS motion", async ({
       return getComputedStyle(moon).animationName;
     }),
   ).toBe("moon-drift");
+  await expect(page.locator(".moon-svg")).toHaveAttribute(
+    "viewBox",
+    "0 0 100 100",
+  );
+  await expect(page.locator(".moon")).toHaveAttribute("data-phase", /.+/);
+  await expect(page.locator(".moon")).toHaveAttribute(
+    "data-illumination",
+    /^\d\.\d{3}$/,
+  );
   expect(
     await page.locator(".star-twinkle-one").evaluate((star) => {
       return getComputedStyle(star).animationName;
@@ -142,5 +178,7 @@ test("respects reduced motion", async ({ page }) => {
   for (const selector of [".moon", ".orbit-one", ".star-twinkle-one"]) {
     await expect(page.locator(selector)).toHaveCSS("animation-name", "none");
   }
+  await expect(page.locator(".moon-svg")).toBeVisible();
+  await expect(page.locator(".moon")).toHaveAttribute("data-phase", /.+/);
   await expect(page.locator(".hero-logo")).toBeVisible();
 });
