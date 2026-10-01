@@ -3,8 +3,9 @@
 ## Boundaries
 
 Celenas Web v1 is a marketing landing page rendered by Next.js App Router.
-It has no API routes, data collection, authentication, external runtime requests
-or client state. Internal anchors provide navigation without a custom library.
+It has no API routes, data collection, authentication or external runtime
+requests; the only client state controls the mobile navigation menu. Internal
+anchors provide navigation without a custom library.
 
 | Location                               | Responsibility                                       |
 | -------------------------------------- | ---------------------------------------------------- |
@@ -12,10 +13,12 @@ or client state. Internal anchors provide navigation without a custom library.
 | `src/app/page.tsx`                     | Semantic home-page composition                       |
 | `src/components/community-details.tsx` | Configured / unavailable participation details       |
 | `src/components/glass-surface.tsx`     | Shared glass interaction surface                     |
+| `src/components/mobile-navigation.tsx` | Small client boundary for closing mobile navigation  |
 | `src/config/site.ts`                   | Reviewed, public product configuration               |
 | `src/content/home.ts`                  | Editable editorial copy and approved gallery entries |
+| `src/content/navigation.ts`            | Shared anchor navigation definitions                 |
+| `docs/world-assets.md`                 | Approved world screenshot asset convention           |
 | `src/styles/tokens.css`                | Shared visual tokens                                 |
-| `public/world/README.md`               | Approved world screenshot asset convention           |
 | `tests/`                               | Component behavior in jsdom                          |
 | `e2e/`                                 | Production page in Playwright                        |
 | `scripts/next.mjs`                     | Portable Next.js entry point with telemetry disabled |
@@ -32,8 +35,9 @@ public path, meaningful alt text and approved caption to the gallery content.
 This is a lightweight source model, not a CMS or a source of live server data.
 
 The glass surface is a small server component backed by shared CSS tokens.
-Navigation uses native anchors and a native `<details>` disclosure on mobile.
-Motion is CSS-only; there is no hydration required for the current interactions.
+Desktop navigation is server-rendered. Mobile navigation is a small client
+boundary only to close the menu after selection, update the hash and focus its
+destination. Hero and interaction motion are CSS-only.
 
 ## Public configuration
 

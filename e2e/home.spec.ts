@@ -56,13 +56,50 @@ test("mobile navigation is keyboard-operable and reaches page sections", async (
 }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/");
-  const menu = page.locator(".mobile-nav");
-  await expect(menu).toBeVisible();
-  await menu.locator("summary").focus();
-  await page.keyboard.press("Enter");
-  await expect(menu).toHaveAttribute("open", "");
-  await menu.getByRole("link", { name: "World" }).click();
-  await expect(page).toHaveURL(/#world$/);
+  const toggle = page.getByRole("button", { name: "Menu" });
+  const menu = page.getByRole("navigation", { name: "ページ内" });
+  const destinations = [
+    ["About", "#about"],
+    ["World", "#world"],
+    ["Community", "#community"],
+    ["Rules", "#rules"],
+    ["Gallery", "#gallery"],
+    ["Join", "#join"],
+  ] as const;
+
+  for (const [label, hash] of destinations) {
+    await toggle.focus();
+    await page.keyboard.press("Enter");
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
+    await expect(menu).toBeVisible();
+    await menu.getByRole("link", { name: label }).click();
+    await expect(page).toHaveURL(new RegExp(`${hash}$`));
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await expect(page.locator(hash)).toBeFocused();
+  }
+});
+
+test("hero celestial scene is decorative and uses CSS motion", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const hero = page.locator(".hero-visual");
+  await expect(hero).toHaveAttribute("aria-hidden", "true");
+  expect(
+    await page.locator(".moon").evaluate((moon) => {
+      return getComputedStyle(moon).animationName;
+    }),
+  ).toBe("moon-drift");
+  expect(
+    await page.locator(".star-twinkle-one").evaluate((star) => {
+      return getComputedStyle(star).animationName;
+    }),
+  ).toBe("star-breathe");
+  expect(
+    await page.locator(".orbit-one").evaluate((orbit) => {
+      return getComputedStyle(orbit).animationName;
+    }),
+  ).toBe("orbit-turn");
 });
 
 test("has no detectable WCAG AA accessibility violations", async ({ page }) => {
@@ -102,4 +139,8 @@ test("respects reduced motion", async ({ page }) => {
       () => getComputedStyle(document.documentElement).scrollBehavior,
     ),
   ).toBe("auto");
+  for (const selector of [".moon", ".orbit-one", ".star-twinkle-one"]) {
+    await expect(page.locator(selector)).toHaveCSS("animation-name", "none");
+  }
+  await expect(page.locator(".hero-logo")).toBeVisible();
 });

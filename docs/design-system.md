@@ -34,11 +34,13 @@ fallback and applies restrained blur only where supported. Use the shared
 not turn every section into a card.
 
 Use system sans-serif for copy and monospace only for connection addresses.
-The page uses a floating desktop glass header and a native, expandable mobile
-menu. The Hero combines a large official mark with a separate, CSS-only celestial
-scene. Motion is limited to the Hero entrance/orbit and interaction feedback;
-all motion and smooth scrolling are reduced when the user requests reduced
-motion. No client component or animation dependency is needed.
+The page uses a floating desktop glass header and an accessible expandable
+mobile menu. The Hero combines a large official mark with a separate, CSS-only
+celestial scene: deterministic far/mid star layers, a few asynchronously
+twinkling accents, slowly drifting moonlight and differently paced orbit rings.
+Motion uses transforms and opacity, is intentionally low-key, and is disabled
+when the user requests reduced motion. Only mobile menu state requires a small
+client component; no animation dependency is needed.
 
 ## Interaction and accessibility
 
@@ -52,6 +54,7 @@ motion. No client component or animation dependency is needed.
 - Future blur/transparency must have an opaque fallback and preserve contrast.
 - Keep non-critical world images lazy and provide descriptive alt text when
   administrator-approved screenshots are added.
+- Keep internal asset guidance in `docs/world-assets.md`, not under `public/`.
 
 Automated axe results are evidence, not proof of complete accessibility. Before
 release, manually inspect focus order, zoom, screen-reader output and real

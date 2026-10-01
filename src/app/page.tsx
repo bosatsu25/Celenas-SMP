@@ -2,26 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { CommunityDetails } from "@/components/community-details";
 import { GlassSurface } from "@/components/glass-surface";
+import { MobileNavigation } from "@/components/mobile-navigation";
 import { SectionHeading } from "@/components/section-heading";
 import { site } from "@/config/site";
 import { homeContent } from "@/content/home";
-
-const navigation = [
-  { href: "#about", label: "About" },
-  { href: "#world", label: "World" },
-  { href: "#community", label: "Community" },
-  { href: "#rules", label: "Rules" },
-  { href: "#gallery", label: "Gallery" },
-  { href: "#join", label: "Join" },
-];
-
-function NavigationLinks() {
-  return navigation.map((item) => (
-    <a key={item.href} href={item.href}>
-      {item.label}
-    </a>
-  ));
-}
+import { navigation } from "@/content/navigation";
 
 export default function Home() {
   return (
@@ -42,24 +27,22 @@ export default function Home() {
             />
           </Link>
           <nav className="top-nav" aria-label="メインナビゲーション">
-            <NavigationLinks />
+            {navigation.map((item) => (
+              <a key={item.href} href={item.href}>
+                {item.label}
+              </a>
+            ))}
           </nav>
-          <details className="mobile-nav">
-            <summary>
-              <span className="mobile-menu-label">Menu</span>
-              <span className="menu-icon" aria-hidden="true" />
-            </summary>
-            <nav
-              className="mobile-nav-panel glass-surface"
-              aria-label="ページ内"
-            >
-              <NavigationLinks />
-            </nav>
-          </details>
+          <MobileNavigation />
         </div>
       </header>
       <main id="main" tabIndex={-1} className="page-shell">
-        <section className="hero shell" aria-labelledby="hero-title">
+        <section
+          className="hero shell"
+          aria-labelledby="hero-title"
+          id="hero"
+          tabIndex={-1}
+        >
           <div className="hero-copy">
             <p className="eyebrow">{homeContent.hero.eyebrow}</p>
             <div className="hero-brand">
@@ -91,7 +74,15 @@ export default function Home() {
           </div>
 
           <div className="hero-visual" aria-hidden="true">
-            <div className="star-field" />
+            <div className="star-field star-field-far" />
+            <div className="star-field star-field-mid" />
+            <div className="star-accents">
+              <span className="star-twinkle star-twinkle-one" />
+              <span className="star-twinkle star-twinkle-two" />
+              <span className="star-twinkle star-twinkle-three" />
+              <span className="star-steady star-steady-one" />
+              <span className="star-steady star-steady-two" />
+            </div>
             <div className="celestial-stage">
               <span className="moon" />
               <span className="orbit orbit-one" />
@@ -113,8 +104,10 @@ export default function Home() {
           id="about"
           className="shell content-section about-section"
           aria-labelledby="about-title"
+          tabIndex={-1}
         >
           <SectionHeading
+            id="about-title"
             eyebrow="About"
             title={homeContent.about.title}
             description={homeContent.about.description}
@@ -140,8 +133,10 @@ export default function Home() {
           id="world"
           className="shell content-section world-section"
           aria-labelledby="world-title"
+          tabIndex={-1}
         >
           <SectionHeading
+            id="world-title"
             eyebrow="World"
             title={homeContent.world.title}
             description={homeContent.world.description}
@@ -161,8 +156,10 @@ export default function Home() {
           id="community"
           className="shell content-section community-section"
           aria-labelledby="community-title"
+          tabIndex={-1}
         >
           <SectionHeading
+            id="community-title"
             eyebrow="Server / Community"
             title={homeContent.community.title}
             description={homeContent.community.description}
@@ -183,8 +180,10 @@ export default function Home() {
           id="rules"
           className="shell content-section rules-section"
           aria-labelledby="rules-title"
+          tabIndex={-1}
         >
           <SectionHeading
+            id="rules-title"
             eyebrow="Rules"
             title={homeContent.rules.title}
             description={homeContent.rules.description}
@@ -201,8 +200,10 @@ export default function Home() {
           id="gallery"
           className="shell content-section gallery-section"
           aria-labelledby="gallery-title"
+          tabIndex={-1}
         >
           <SectionHeading
+            id="gallery-title"
             eyebrow="Gallery"
             title={homeContent.gallery.title}
             description={homeContent.gallery.description}
@@ -247,6 +248,7 @@ export default function Home() {
           id="join"
           className="join-section shell"
           aria-labelledby="join-title"
+          tabIndex={-1}
         >
           <div className="join-copy">
             <p className="eyebrow">Join</p>

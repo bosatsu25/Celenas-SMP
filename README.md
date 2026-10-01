@@ -36,7 +36,7 @@ Windows のブラウザ導入コマンドなど、詳細は [テスト手順](do
 - 月明かりと軌道をモチーフにした、控えめな Liquid Glass ナビゲーションと操作表現
 - 公式ロゴ `public/brand/celenas-logo-white.png` をヘッダーと Hero で使用
 - 編集コピーは `src/content/home.ts`、確認済みの接続情報は `src/config/site.ts` で管理
-- 実スクリーンショット未掲載時は意図的な Gallery pending 表示。画像の追加手順は `public/world/README.md`
+- 実スクリーンショット未掲載時は意図的な Gallery pending 表示。画像の追加手順は `docs/world-assets.md`
 - 未確定の公開情報は `src/config/site.ts` の `null` / optional で保持
 - 本番環境で使うサーバーアドレス、ドメイン、Discord URL、Minecraft スクリーンショットは未確定
 - サーバー状態APIやライブ監視は未実装
