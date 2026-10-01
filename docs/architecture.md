@@ -56,9 +56,11 @@ implemented work. System fonts avoid build-time font downloads.
 
 ## Deferred decisions
 
-Phase 2 owns the full information architecture, canonical logo, approved
-Minecraft imagery, Liquid Glass interactions and new content routes. Hosting,
-domain, server integration and production policy remain undecided.
+The current v1 landing page intentionally leaves real server/community facts,
+official domain information and final Minecraft imagery as pending values.
+The canonical logo is supplied as a public asset when approved; the site uses it
+where appropriate. Hosting, live server status and production policy remain
+separate from the implemented marketing experience.
 
 References: [Next.js installation](https://nextjs.org/docs/app/getting-started/installation),
 [pnpm supply-chain protection](https://pnpm.io/supply-chain-security).

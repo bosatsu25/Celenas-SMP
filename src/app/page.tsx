@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { CommunityDetails } from "@/components/community-details";
 import { SectionHeading } from "@/components/section-heading";
@@ -27,13 +28,6 @@ const worldFeatures = [
   },
 ];
 
-const rules = [
-  "建築や会話の節度を守り、みんなが快適に過ごせる空間を作る",
-  "チェストや保護の範囲を大切にし、他人の建築や資源を勝手に扱わない",
-  "イベントやコミュニティ活動の参加は、相互理解と丁寧な意志疎通を重視する",
-  "サーバーの雰囲気を壊す行為や、常習的なトラブルは事前に連絡と整理を行う",
-];
-
 const gallery = [
   { label: "Moonlit base", tone: "tone-1" },
   { label: "Campsite", tone: "tone-2" },
@@ -49,10 +43,14 @@ export default function Home() {
       </a>
       <header className="site-header shell">
         <Link className="wordmark" href="/" aria-label="Celenas SMP ホーム">
-          <span className="wordmark-mark" aria-hidden="true">
-            <span className="wordmark-orbit" />
-          </span>
-          <span>Celenas</span>
+          <Image
+            src="/brand/celenas-logo-white.png"
+            alt="Celenas"
+            width={152}
+            height={44}
+            priority
+            className="brand-logo"
+          />
         </Link>
         <nav className="top-nav" aria-label="メインナビゲーション">
           {navigation.map((item) => (
@@ -97,10 +95,7 @@ export default function Home() {
             </ul>
           </div>
 
-          <div
-            className="hero-visual"
-            aria-label="Celenasの月と軌道をイメージしたビジュアル"
-          >
+          <div className="hero-visual" aria-hidden="true">
             <div className="moon-scene" aria-hidden="true">
               <span className="moon" />
               <span className="orbit orbit-one" />
@@ -200,14 +195,15 @@ export default function Home() {
         >
           <SectionHeading
             eyebrow="Rules"
-            title="安心して過ごせるための基本"
-            description="Celenas は、建築とコミュニケーションを大切にしながら、余白のあるサーバー文化を育てます。"
+            title="サーバールールは管理者確認中です。"
+            description="公開準備が整い次第、こちらで正式な案内を更新します。"
           />
-          <ol className="rules-list">
-            {rules.map((rule) => (
-              <li key={rule}>{rule}</li>
-            ))}
-          </ol>
+          <div className="soft-panel" aria-live="polite">
+            <p>
+              サーバールールは現在、管理者確認中です。
+              公開準備が整い次第、このページで案内します。
+            </p>
+          </div>
         </section>
 
         <section

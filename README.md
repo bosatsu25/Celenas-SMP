@@ -1,7 +1,9 @@
 # Celenas SMP
 
-Minecraft コミュニティサイトのフロントエンド基盤です。Phase 1 は最小限の
-案内ページと再現可能な開発・検証環境を提供します。
+Celenas の公開 Web v1 ランディングページです。現在の実装では、
+Hero / About / World / Server / Rules / Gallery / Join / Footer を備えた
+ダークな月夜テーマのサイトを提供し、未確定のサーバー情報や画像は
+pending state として明示します。
 
 ## 開発
 
@@ -27,6 +29,16 @@ pnpm check
 順に実行します。ブラウザテストはポート 3100 に専用の本番サーバーを起動します。
 Windows のブラウザ導入コマンドなど、詳細は [テスト手順](docs/testing.md) を参照してください。
 
+## 実装状況
+
+- Web v1 ランディングページを実装済み
+- Hero / About / World / Server / Rules / Gallery / Join / Footer を含む
+- Liquid Glass に着想を得たナビゲーションとインタラクション層を採用
+- 未確定の公開情報は `src/config/site.ts` の `null` / optional で保持
+- 公式ロゴが提供されれば `public/brand/celenas-logo-white.png` を使用する構成
+- 本番環境で使うサーバーアドレス、ドメイン、Discord URL、Minecraft スクリーンショットは未確定
+- サーバー状態APIやライブ監視は未実装
+
 ## 構成
 
 - Next.js App Router / React / strict TypeScript
@@ -34,9 +46,9 @@ Windows のブラウザ導入コマンドなど、詳細は [テスト手順](do
 - Vitest / React Testing Library / Playwright / axe
 - ESLint / Prettier / GitHub Actions
 
-参加情報は `src/config/site.ts` で管理します。未確定値は `null` のまま表示され、
+参加情報は `src/config/site.ts` で管理し、未確定値は `null` のまま表示します。
 架空のアドレス・バージョン・Discord URL は使用しません。確認済みの公開情報を
-設定した後、再ビルドしてください。ここに秘密情報を置かないでください。
+設定した後、再ビルドしてください。秘密情報や個人情報は置かないでください。
 
 ## ドキュメント
 
@@ -44,11 +56,11 @@ Windows のブラウザ導入コマンドなど、詳細は [テスト手順](do
 - [デザイン基盤](docs/design-system.md)
 - [テスト](docs/testing.md)
 - [品質ゲート](docs/quality-gates.md)
-- [Phase 1 計画・実行記録](docs/phase-1-plan.md)
+- [実装記録と計画](docs/phase-1-plan.md)
 - [エージェント向け作業ルール](AGENTS.md)
 
-## Phase 2
+## 現在の状態
 
-正式ロゴ、確認済みの参加情報、Minecraft の画像、サイト全体のコンテンツ、
-Liquid Glass の詳細な表現・操作設計は次フェーズで扱います。現在はテキストの
-ブランド表示のみで、外部 API、アクセス解析、サーバー監視は導入していません。
+正式ロゴ、確認済みの参加情報、本番の Minecraft スクリーンショット、
+サーバーの live status は未確定のままです。Web v1 の基礎実装は完了しており、
+未確認の情報は意図的に pending として表示しています。
