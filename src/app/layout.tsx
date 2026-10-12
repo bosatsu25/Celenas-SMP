@@ -1,22 +1,46 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { site } from "@/config/site";
+import { resolveSiteUrl } from "@/lib/site-url";
 import "./globals.css";
 
+const siteUrl = resolveSiteUrl();
+const ogImageUrl = new URL("og/celenas-og.png", siteUrl).toString();
+const searchDescription =
+  "Celenas SMPは、Minecraft Java Edition 26.3で建築・探索・装置づくりを楽しめるサバイバルサーバーです。参加申請はDiscordから受け付けています。";
+
 export const metadata: Metadata = {
-  title: `${site.name} | Minecraft コミュニティ`,
-  description: site.description,
+  metadataBase: new URL(siteUrl),
+  title: "Celenas SMP | Minecraftサバイバルサーバー",
+  description: searchDescription,
+  alternates: {
+    canonical: siteUrl,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
   openGraph: {
-    title: `${site.name} | Minecraft コミュニティ`,
-    description: site.description,
+    title: "Celenas SMP",
+    description: "Minecraftサバイバルコミュニティ",
     siteName: site.name,
     locale: "ja_JP",
     type: "website",
+    url: siteUrl,
+    images: [
+      {
+        url: ogImageUrl,
+        width: 1200,
+        height: 630,
+        alt: "Celenas SMP OG image",
+      },
+    ],
   },
   twitter: {
-    card: "summary",
-    title: `${site.name} | Minecraft コミュニティ`,
-    description: site.description,
+    card: "summary_large_image",
+    title: "Celenas SMP",
+    description: "Minecraftサバイバルコミュニティ",
+    images: [{ url: ogImageUrl, alt: "Celenas SMP OG image" }],
   },
 };
 

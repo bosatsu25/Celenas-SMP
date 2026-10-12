@@ -8,27 +8,17 @@ export function CommunityDetails({
   return (
     <dl className="community-details">
       <div>
-        <dt>サーバーアドレス</dt>
-        <dd>
-          {connection.serverAddress ? (
-            <code>{connection.serverAddress}</code>
-          ) : (
-            "サーバーアドレスは準備中です。"
-          )}
-        </dd>
+        <dt>エディション</dt>
+        <dd>Minecraft Java Edition</dd>
       </div>
       <div>
-        <dt>Minecraft バージョン</dt>
-        <dd>{connection.minecraftVersion || "対応バージョンは準備中です。"}</dd>
+        <dt>バージョン</dt>
+        <dd>{connection.minecraftVersion}</dd>
       </div>
       <div>
-        <dt>コミュニティ</dt>
+        <dt>参加窓口</dt>
         <dd>
-          {connection.discordUrl ? (
-            <a href={connection.discordUrl}>Discord へ</a>
-          ) : (
-            "Discord の案内は準備中です。"
-          )}
+          <a href={connection.joinHref}>Discord コミュニティへ参加 ↗</a>
         </dd>
       </div>
     </dl>

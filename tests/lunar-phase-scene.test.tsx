@@ -1,111 +1,169 @@
-import { act, render } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { render } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  getCycleFraction,
+  getPhaseFraction,
+  getShadowPath,
+  getShadowTransform,
+  INITIAL_PHASE,
+  LUNAR_CYCLE_DURATION_MS,
+  LunarPhaseBackground,
   LunarPhaseScene,
   LunarPhaseVisual,
+  MOBILE_PHASE_UPDATE_INTERVAL_MS,
+  PHASE_UPDATE_INTERVAL_MS,
+  REDUCED_MOTION_PHASE,
+  SHADOW_TILT_DEGREES,
 } from "@/components/lunar-phase-scene";
-import { getLunarPhase } from "@/lib/lunar-phase";
+
+beforeEach(() => {
+  vi.stubGlobal(
+    "matchMedia",
+    vi.fn(() => ({
+      matches: true,
+      media: "(prefers-reduced-motion: reduce)",
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+    })),
+  );
+});
 
 afterEach(() => {
-  vi.useRealTimers();
+  vi.unstubAllGlobals();
+});
+
+describe("hero phase cycle", () => {
+  it("starts waxing crescent and completes a seamless 120-second cycle", () => {
+    const fractions = [0, 30_000, 60_000, 90_000, 120_000].map(
+      getPhaseFraction,
+    );
+    const cycleFractions = [0, 30_000, 60_000, 90_000, 120_000].map(
+      getCycleFraction,
+    );
+
+    expect(LUNAR_CYCLE_DURATION_MS).toBe(120_000);
+    expect(PHASE_UPDATE_INTERVAL_MS).toBe(100);
+    expect(MOBILE_PHASE_UPDATE_INTERVAL_MS).toBe(200);
+    expect(INITIAL_PHASE).toBe(0.125);
+    expect(fractions).toEqual([0.125, 0.375, 0.625, 0.875, 0.125]);
+    expect(cycleFractions).toEqual([0, 0.25, 0.5, 0.75, 0]);
+    expect(getShadowPath(fractions[0] ?? 0)).toBe(
+      getShadowPath(fractions[4] ?? 0),
+    );
+    expect(getShadowTransform(fractions[0] ?? 0)).toBe(
+      getShadowTransform(fractions[4] ?? 0),
+    );
+    expect(getShadowPath(fractions[0] ?? 0)).not.toBe(
+      getShadowPath(fractions[2] ?? 0),
+    );
+  });
+
+  it("morphs through the cycle and mirrors only the waning phases", () => {
+    const fractions = [
+      0.125,
+      0.375,
+      0.625,
+      0.875,
+      getPhaseFraction(LUNAR_CYCLE_DURATION_MS),
+    ];
+    const states = fractions.map((fraction) => ({
+      path: getShadowPath(fraction),
+      direction: getShadowTransform(fraction),
+    }));
+
+    expect(states[0]).toEqual(states[4]);
+    expect(states[0]?.path).not.toBe(states[1]?.path);
+    expect(states[1]?.path).toBe(states[2]?.path);
+    expect(states[1]?.direction).not.toBe(states[2]?.direction);
+    expect(states[0]?.path).toBe(states[4]?.path);
+    expect(states.map((state) => state.direction)).toEqual([
+      null,
+      null,
+      "translate(100 0) scale(-1 1)",
+      "translate(100 0) scale(-1 1)",
+      null,
+    ]);
+    expect(
+      new Set(
+        states.slice(0, 4).map((state) => `${state.path}|${state.direction}`),
+      ).size,
+    ).toBe(4);
+  });
 });
 
 describe("lunar phase visual", () => {
-  it("renders a decorative SVG and phase-driven atmosphere", () => {
-    const phase = getLunarPhase(new Date("2001-01-24T13:07:00.000Z"));
-    const { container } = render(<LunarPhaseVisual phase={phase} />);
+  it("keeps the fictional planet and displays a static phase for reduced motion", () => {
+    const { container } = render(<LunarPhaseVisual />);
     const moon = container.querySelector(".moon");
 
-    expect(moon).toHaveAttribute("data-phase", "new");
+    expect(moon).toHaveAttribute("data-phase", "waxing-crescent");
+    expect(moon).toHaveAttribute("data-illumination", "0.146");
+    expect(moon).toHaveAttribute("data-cycle-position", "0.125");
+    expect(moon).toHaveAttribute("data-cycle-duration", "120000");
+    expect(
+      container.querySelector(".planet-shadow-morph path"),
+    ).toHaveAttribute("d", getShadowPath(REDUCED_MOTION_PHASE));
     expect(container.querySelector("[role='img']")).toBeNull();
-    expect(container.querySelector("svg")).toHaveAttribute(
+    expect(container.querySelector(".moon-svg")).toHaveAttribute(
       "aria-hidden",
       "true",
     );
-    expect(container.querySelector("svg")).toHaveAttribute(
-      "viewBox",
-      "0 0 100 100",
+    expect(container.querySelectorAll(".orbiting-body")).toHaveLength(3);
+    expect(container.querySelectorAll("animateMotion")).toHaveLength(3);
+    expect(
+      [...container.querySelectorAll("animateMotion")].map((motion) =>
+        motion.getAttribute("dur"),
+      ),
+    ).toEqual(["72s", "103s", "137s"]);
+    expect(
+      [...container.querySelectorAll("animateMotion")].map((motion) =>
+        motion.getAttribute("begin"),
+      ),
+    ).toEqual(["-5.76s", "-44.29s", "-104.12s"]);
+    expect(container.querySelectorAll(".orbit-line")).toHaveLength(3);
+    expect(container.querySelector(".planet-shadow-morph")).toHaveAttribute(
+      "transform",
+      `rotate(${SHADOW_TILT_DEGREES} 50 50)`,
     );
-    expect(container.querySelector(".celestial-scene")).toHaveStyle({
-      "--moon-glow-opacity": "0.120",
-      "--moonlight-opacity": "0.080",
-      "--star-field-far-opacity": "0.440",
-      "--stardust-opacity": "0.240",
-    });
-    expect(container.querySelectorAll(".stardust-layer")).toHaveLength(3);
+    expect(SHADOW_TILT_DEGREES).toBe(12);
   });
 
-  it("renders distinct illumination and waxing direction for each phase", () => {
-    const newMoon = getLunarPhase(new Date("2001-01-24T13:07:00.000Z"));
-    const firstQuarterDate = new Date(
-      Date.parse("2001-01-24T13:07:00.000Z") +
-        29.530588 * 24 * 60 * 60 * 1000 * 0.25,
-    );
-    const firstQuarter = getLunarPhase(firstQuarterDate);
-    const waningCrescentDate = new Date(
-      Date.parse("2001-01-24T13:07:00.000Z") +
-        29.530588 * 24 * 60 * 60 * 1000 * 0.875,
-    );
-    const waningCrescent = getLunarPhase(waningCrescentDate);
-    const fullMoonDate = new Date(
-      Date.parse("2001-01-24T13:07:00.000Z") +
-        29.530588 * 24 * 60 * 60 * 1000 * 0.5,
-    );
-    const fullMoon = getLunarPhase(fullMoonDate);
+  it("renders the official texture without attaching phase transforms to it", () => {
+    const { container } = render(<LunarPhaseScene />);
+    const texture = container.querySelector(".moon image");
 
-    const { container, rerender } = render(
-      <LunarPhaseVisual phase={newMoon} />,
-    );
-    const moon = container.querySelector(".moon");
-    expect(moon).toHaveAttribute("data-illumination", "0.000");
-    expect(container.querySelector(".moon path")).not.toHaveAttribute(
-      "transform",
-    );
-
-    rerender(<LunarPhaseVisual phase={firstQuarter} />);
-    expect(moon).toHaveAttribute("data-phase", "first-quarter");
-    expect(container.querySelector(".moon path")).not.toHaveAttribute(
-      "transform",
-    );
-    expect(moon).toHaveAttribute("data-illumination", "0.500");
-
-    rerender(<LunarPhaseVisual phase={waningCrescent} />);
-    expect(moon).toHaveAttribute("data-phase", "waning-crescent");
-    expect(moon).toHaveAttribute("data-illumination", "0.146");
-    expect(container.querySelector(".moon path")).toHaveAttribute(
-      "transform",
-      "translate(100 0) scale(-1 1)",
-    );
-
-    rerender(<LunarPhaseVisual phase={fullMoon} />);
-    expect(moon).toHaveAttribute("data-phase", "full");
-    expect(moon).toHaveAttribute("data-illumination", "1.000");
-    expect(container.querySelector(".celestial-scene")).toHaveStyle({
-      "--stardust-opacity": "0.160",
-    });
+    expect(texture).toHaveAttribute("href", "/space/lunar-surface.webp");
+    expect(texture).not.toHaveAttribute("transform");
+    expect(container.querySelector(".planet-shadow-morph")).toBeInTheDocument();
   });
 
-  it("refreshes the server-provided phase after hydration and cleans up its timers", async () => {
-    const reference = Date.parse("2001-01-24T13:07:00.000Z");
-    const synodicMonthMs = 29.530588 * 24 * 60 * 60 * 1000;
-    const currentDate = new Date(reference + synodicMonthMs * 0.25);
-    vi.useFakeTimers();
-    vi.setSystemTime(currentDate);
-
-    const { container, unmount } = render(
-      <LunarPhaseScene
-        initialPhase={getLunarPhase(new Date("2001-01-24T13:07:00.000Z"))}
-      />,
+  it("renders decorative deep-space layers and three nebula gas layers", () => {
+    const { container } = render(
+      <>
+        <LunarPhaseBackground />
+        <LunarPhaseScene />
+      </>,
     );
-    const moon = container.querySelector(".moon");
-    expect(moon).toHaveAttribute("data-phase", "new");
 
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(0);
+    expect(
+      container.querySelector(".hero-space-background"),
+    ).toBeInTheDocument();
+    expect(container.querySelector(".deep-space-backdrop")).toBeInTheDocument();
+    expect(
+      container.querySelector(".celestial-scene .deep-space-backdrop"),
+    ).toBeNull();
+    expect(container.querySelector(".aurora-curtains")).toBeNull();
+    expect(container.querySelector(".aurora-ribbon")).toBeNull();
+    expect(container.querySelector(".nebula-atmosphere")).toHaveAttribute(
+      "aria-hidden",
+      "true",
+    );
+    expect(container.querySelectorAll(".nebula-cloud")).toHaveLength(3);
+    const nebula = container.querySelector(".deep-space-nebula-baked");
+    expect(nebula).toHaveAttribute("aria-hidden", "true");
+    expect(nebula).toHaveStyle({
+      backgroundImage: 'url("/space/hero-nebula.webp")',
     });
-    expect(moon).toHaveAttribute("data-phase", "first-quarter");
-
-    unmount();
-    expect(vi.getTimerCount()).toBe(0);
+    expect(container.querySelector(".deep-space-nebula")).toBeNull();
   });
 });

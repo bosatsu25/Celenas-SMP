@@ -2,7 +2,7 @@ import { access, readFile } from "node:fs/promises";
 import { extname, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const basePath = "/Celenas-SMP";
+const basePath = "/Celenas-SMP-web";
 const outputDirectory = resolve("out");
 const indexPath = resolve(outputDirectory, "index.html");
 
@@ -32,6 +32,39 @@ async function verifyExport() {
   }
   if (/["']\/(?:_next|brand)\//.test(html)) {
     fail("A root-absolute Next.js or public asset path remains in the HTML.");
+  }
+
+  const requiredMetadata = [
+    "<title>Celenas SMP | Minecraftサバイバルサーバー</title>",
+    '<link rel="canonical" href="https://chise7-mc.github.io/Celenas-SMP-web/"',
+    'name="description" content="Celenas SMPは、Minecraft Java Edition 26.3で建築・探索・装置づくりを楽しめるサバイバルサーバーです。参加申請はDiscordから受け付けています。"',
+    'name="robots" content="index, follow"',
+    'property="og:image" content="https://chise7-mc.github.io/Celenas-SMP-web/og/celenas-og.png"',
+    'name="twitter:card" content="summary_large_image"',
+  ];
+  for (const metadata of requiredMetadata) {
+    if (!html.includes(metadata)) {
+      fail(`Expected SEO metadata is missing: ${metadata}`);
+    }
+  }
+
+  const sitemapPath = resolve(outputDirectory, "sitemap.xml");
+  try {
+    const sitemap = await readFile(sitemapPath, "utf8");
+    if (
+      !sitemap.includes(
+        "<loc>https://chise7-mc.github.io/Celenas-SMP-web/</loc>",
+      ) ||
+      (sitemap.match(/<loc>/g) ?? []).length !== 1
+    ) {
+      fail("sitemap.xml must contain only the canonical home page URL.");
+    }
+  } catch (error) {
+    if (error?.code === "ENOENT") {
+      fail("sitemap.xml is missing from the static export.");
+    } else {
+      throw error;
+    }
   }
 
   const iconTag = [...html.matchAll(/<link\b[^>]*>/g)]

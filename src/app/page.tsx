@@ -1,19 +1,21 @@
 import Image from "next/image";
 import Link from "next/link";
-import { CommunityDetails } from "@/components/community-details";
+import { CelestialJourney } from "@/components/celestial-journey";
 import { GlassSurface } from "@/components/glass-surface";
-import { LunarPhaseScene } from "@/components/lunar-phase-scene";
+import { GalleryRail } from "@/components/gallery-rail";
+import {
+  LunarPhaseBackground,
+  LunarPhaseScene,
+} from "@/components/lunar-phase-scene";
 import { MobileNavigation } from "@/components/mobile-navigation";
 import { SectionHeading } from "@/components/section-heading";
+import { TransmissionPanel } from "@/components/transmission-panel";
 import { site } from "@/config/site";
 import { homeContent } from "@/content/home";
 import { navigation } from "@/content/navigation";
 import { withBasePath } from "@/lib/asset-path";
-import { getLunarPhase } from "@/lib/lunar-phase";
 
 export default function Home() {
-  const initialPhase = getLunarPhase(new Date());
-
   return (
     <>
       <a className="skip-link" href="#main">
@@ -41,6 +43,7 @@ export default function Home() {
           <MobileNavigation />
         </div>
       </header>
+      <CelestialJourney />
       <main id="main" tabIndex={-1} className="page-shell">
         <section
           className="hero shell"
@@ -48,6 +51,7 @@ export default function Home() {
           id="hero"
           tabIndex={-1}
         >
+          <LunarPhaseBackground />
           <div className="hero-copy">
             <p className="eyebrow">{homeContent.hero.eyebrow}</p>
             <div className="hero-brand">
@@ -64,7 +68,10 @@ export default function Home() {
             <p className="hero-description">{homeContent.hero.description}</p>
             <p className="hero-supporting">{homeContent.hero.supportingText}</p>
             <div className="hero-actions">
-              <a className="glass-button glass-button-primary" href="#join">
+              <a
+                className="glass-button glass-button-primary"
+                href={site.connection.joinHref}
+              >
                 {homeContent.hero.primaryAction}
                 <span aria-hidden="true">↗</span>
               </a>
@@ -74,19 +81,15 @@ export default function Home() {
             </div>
             <p className="hero-note">
               <span className="status-indicator" aria-hidden="true" />
-              参加方法は準備中
+              Minecraft Java Edition 26.3
             </p>
           </div>
 
           <div className="hero-visual" aria-hidden="true">
-            <LunarPhaseScene initialPhase={initialPhase} />
-            <GlassSurface className="hero-glass-note">
-              <span className="panel-label">Celenas</span>
-              <strong>A quieter kind of world</strong>
-            </GlassSurface>
+            <LunarPhaseScene />
           </div>
           <a className="scroll-cue" href="#about">
-            Discover <span aria-hidden="true">↓</span>
+            About Celenas <span aria-hidden="true">↓</span>
           </a>
         </section>
 
@@ -102,6 +105,18 @@ export default function Home() {
             title={homeContent.about.title}
             description={homeContent.about.description}
           />
+          <div className="about-signature">
+            <Image
+              src={withBasePath("/brand/celenas-logo-white.png")}
+              alt=""
+              width={64}
+              height={64}
+            />
+            <span>
+              <strong>Celenas SMP</strong>
+              <small>Minecraft Java 26.3 · Survival SMP</small>
+            </span>
+          </div>
           <div className="split-layout">
             <div className="about-copy">
               {homeContent.about.paragraphs.map((paragraph) => (
@@ -150,15 +165,15 @@ export default function Home() {
         >
           <SectionHeading
             id="community-title"
-            eyebrow="Server / Community"
+            eyebrow="Community / Connection"
             title={homeContent.community.title}
             description={homeContent.community.description}
           />
           <div className="community-layout">
-            <GlassSurface className="community-panel">
-              <p className="panel-label">Connection details</p>
-              <CommunityDetails connection={site.connection} />
-            </GlassSurface>
+            <TransmissionPanel
+              connection={site.connection}
+              variant="community"
+            />
             <GlassSurface className="community-note">
               <span className="status-indicator" aria-hidden="true" />
               <p>{homeContent.community.note}</p>
@@ -178,12 +193,18 @@ export default function Home() {
             title={homeContent.rules.title}
             description={homeContent.rules.description}
           />
-          <GlassSurface className="pending-panel">
-            <span className="pending-mark" aria-hidden="true">
-              <span />
-            </span>
-            <p>{homeContent.rules.pending}</p>
-          </GlassSurface>
+          <ol className="rules-list">
+            {homeContent.rules.items.map((rule) => (
+              <li key={rule.number}>
+                <span className="rule-number">{rule.number}</span>
+                <div>
+                  <h3>{rule.title}</h3>
+                  <p>{rule.body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <p className="rules-footnote">{homeContent.rules.footnote}</p>
         </section>
 
         <section
@@ -199,24 +220,7 @@ export default function Home() {
             description={homeContent.gallery.description}
           />
           {homeContent.gallery.images.length > 0 ? (
-            <div className="gallery-grid">
-              {homeContent.gallery.images.map((image) => (
-                <figure key={image.src} className="gallery-item">
-                  <div className="gallery-image">
-                    <Image
-                      src={withBasePath(image.src)}
-                      alt={image.alt}
-                      fill
-                      sizes="(max-width: 48rem) 100vw, (max-width: 72rem) 50vw, 36rem"
-                    />
-                  </div>
-                  <figcaption>
-                    <span>{image.caption}</span>
-                    {image.location ? <span>{image.location}</span> : null}
-                  </figcaption>
-                </figure>
-              ))}
-            </div>
+            <GalleryRail images={homeContent.gallery.images} />
           ) : (
             <GlassSurface className="gallery-empty">
               <div className="gallery-orbit" aria-hidden="true">
@@ -224,11 +228,9 @@ export default function Home() {
                 <span />
               </div>
               <div>
-                <p className="panel-label">Field notes / 00</p>
+                <p className="panel-label">ARCHIVE / 00</p>
                 <h3>{homeContent.gallery.pending}</h3>
-                <p>
-                  実際の風景が届いたら、ここから Celenas の記録をお届けします。
-                </p>
+                <p>{homeContent.gallery.emptyDescription}</p>
               </div>
             </GlassSurface>
           )}
@@ -244,17 +246,26 @@ export default function Home() {
             <p className="eyebrow">Join</p>
             <h2 id="join-title">{homeContent.join.title}</h2>
             <p className="muted">{homeContent.join.description}</p>
+            <ol className="join-steps" aria-label="参加までの手順">
+              {homeContent.join.steps.map((step) => (
+                <li key={step.number}>
+                  <span aria-hidden="true">{step.number}</span>
+                  <div>
+                    <h3>{step.title}</h3>
+                    <p>{step.body}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
           </div>
-          <GlassSurface className="join-panel">
-            <CommunityDetails connection={site.connection} />
-          </GlassSurface>
+          <TransmissionPanel connection={site.connection} variant="join" />
         </section>
       </main>
       <footer className="site-footer shell">
         <Link href="/" aria-label="Celenas SMP ホーム">
           Celenas SMP
         </Link>
-        <p>Minecraft community / Moonlit moments, made together.</p>
+        <p>Celenas SMP · Minecraft Java 26.3</p>
       </footer>
     </>
   );

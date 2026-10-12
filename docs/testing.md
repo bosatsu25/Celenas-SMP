@@ -7,17 +7,19 @@ Install Chromium once with `pnpm exec playwright install chromium` (Linux CI use
 `--with-deps`). If a Windows shell cannot resolve the pnpm-exec shim, use
 `.\node_modules\.bin\playwright.cmd install chromium`.
 
-| Command             | Evidence                                                 |
-| ------------------- | -------------------------------------------------------- |
-| `pnpm format:check` | Formatting consistency                                   |
-| `pnpm lint`         | Next.js, React and TypeScript lint; warnings fail        |
-| `pnpm typecheck`    | Next route types and strict TypeScript, including tests  |
-| `pnpm test`         | Component behavior with Vitest and React Testing Library |
-| `pnpm test:watch`   | Focused local feedback                                   |
-| `pnpm build`        | Production compilation and static generation             |
-| `pnpm test:e2e`     | Fresh production server, desktop/mobile Chromium         |
-| `pnpm check`        | All gates, ending in production browser checks           |
-| `pnpm verify:pages` | Verify the Pages static export after its build           |
+| Command                      | Evidence                                                 |
+| ---------------------------- | -------------------------------------------------------- |
+| `pnpm format:check`          | Formatting consistency                                   |
+| `pnpm lint`                  | Next.js, React and TypeScript lint; warnings fail        |
+| `pnpm typecheck`             | Next route types and strict TypeScript, including tests  |
+| `pnpm test`                  | Component behavior with Vitest and React Testing Library |
+| `pnpm gallery:validate`      | Gallery manifest and published image integrity           |
+| `pnpm test:watch`            | Focused local feedback                                   |
+| `pnpm build`                 | Production compilation and static generation             |
+| `pnpm test:e2e`              | Fresh production server, desktop/mobile Chromium         |
+| `pnpm check`                 | All gates, ending in production browser checks           |
+| `pnpm verify:pages`          | Verify the Pages static export after its build           |
+| `pnpm verify:pages-redirect` | Verify the Pages-only redirect artifact                  |
 
 Run `pnpm build` before standalone `pnpm test:e2e`; `pnpm check` does this for
 you. Playwright starts its own server on loopback port 3100 and refuses to reuse
@@ -25,26 +27,45 @@ an existing listener. Free that port instead of changing reuse behavior.
 
 ## Coverage
 
-Component tests verify unavailable information has no fabricated join action and
-configured values produce readable details and a usable HTTPS link. Fixtures
-use reserved `.test` domains; those are never production defaults. Lunar phase
-unit tests use fixed UTC dates and verify phase sectors, waxing/waning,
-illumination bounds and deterministic output. Visual component tests check
-decorative SVG output and phase-driven atmospheric CSS properties.
+Component tests verify the published edition, Minecraft version, protected
+participation target and static INFO transmission state. Participation tests
+cover opt-in loading, missing settings, expiry, duplicate submission, retry
+and stale-response rejection. API tests exercise input/origin bounds, Google
+response validation, single-use failures and timeout. Gallery core tests cover manifest shape,
+duplicate IDs and paths, image metadata, path traversal and insertion order.
+Lunar phase unit tests use fixed UTC dates and
+verify phase sectors, waxing/waning, illumination bounds and deterministic
+output. Visual component tests check decorative SVG output and phase-driven
+atmospheric CSS properties.
 
-Browser tests load the production page, follow the participation anchor, check
-missing information, the canonical logo and site icon, pending gallery state,
-the date-driven decorative lunar SVG, CSS motion, keyboard-operable mobile menu
-navigation and close-on-selection, destination focus, keyboard skip navigation,
-runtime errors, layout overflow from 320px through wide desktop at 200% text
-scaling, reduced motion and axe WCAG A/AA rules. Desktop and mobile projects
-both use Chromium; this is not Safari or Firefox coverage.
+Browser tests load the production page, check the protected Discord actions,
+Java Edition details, static INFO state, all six rules and the intentionally omitted
+server address, plus the canonical logo and site icon and image-only Gallery cards.
+They also cover Gallery rail snapping, shared stage alignment, borderless rounded
+images, fullscreen viewer placement, edge controls, image advance, fade and
+reduced-motion behavior, mobile safe-area layout and focus restoration, counter/progress,
+image peek and responsive overflow; accessible orbital navigation and browser history, active marker
+alignment at three desktop viewport sizes,
+the 120-second waxing-crescent SVG phase morph, fixed tilt and 100ms update
+limit, offscreen / hidden-document pause and phase resume, CSS orbit periods,
+satellite positions on their ellipse paths, the high-detail baked WebP nebula
+under 200 KB and black edge fades on every target desktop/mobile viewport, absence of
+runtime SVG filters and blend modes, restrained desktop motion, mobile low-cost
+glass / nebula / Journey rendering, a localized star cluster and two subtle
+desktop star twinkles, 200ms phase updates with orbit motion
+retained, desktop nebula drift and mobile ambient-motion pause,
+keyboard-operable mobile menu navigation and
+close-on-selection, destination focus, keyboard skip navigation, runtime errors,
+layout overflow from 320px
+through wide desktop at 200% text scaling, reduced motion and axe WCAG A/AA
+rules. Desktop and mobile projects both use Chromium; this is not Safari or
+Firefox coverage.
 
 To validate the GitHub Pages output locally on PowerShell:
 
 ```powershell
 $env:GITHUB_PAGES = "true"
-$env:NEXT_PUBLIC_BASE_PATH = "/Celenas-SMP"
+$env:NEXT_PUBLIC_BASE_PATH = "/Celenas-SMP-web"
 pnpm build
 pnpm verify:pages
 Remove-Item Env:GITHUB_PAGES
@@ -58,6 +79,15 @@ exist. The deployment workflow runs it before uploading `out/`.
 Prefer role/name queries and visible outcomes over implementation details or
 broad snapshots. Test public behavior at the smallest useful layer. Use browser
 tests for App Router integration and asynchronous server components.
+
+## Configured participation tests
+
+Set `NEXT_PUBLIC_RECAPTCHA_SITE_KEY=synthetic-key`, run `pnpm build`, then
+`pnpm exec playwright test e2e/join.spec.ts`. Playwright intercepts Google and
+the verification API; no real key or external authentication is used. Remove
+that variable afterward. Ordinary builds verify the missing-key state.
+Real Google/Cloudflare behavior requires the preview checks documented in
+[participation security](join-security.md).
 
 ## Privacy and limits
 
